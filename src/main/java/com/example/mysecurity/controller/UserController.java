@@ -1,7 +1,6 @@
 package com.example.mysecurity.controller;
 
 import com.example.mysecurity.service.UserAccountService;
-import com.example.mysecurity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +20,7 @@ public class UserController {
         return "login";
     }
 
-    @GetMapping("/my-page")
+    @GetMapping("/mypage")
     public String myPage() {
         return "myPage";
     }

@@ -5,10 +5,12 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>로그인 상태네요!</title>
+    <title>마이페이지</title>
 </head>
 <body>
-<h2>로그로그~</h2>
-<a th:href="@{/logout}">로그아웃하기</a>
+<h2>마이페이지</h2>
+<form th:action="@{/logout}" method="post" style="display: inline-block;">
+    <button>로그아웃하기</button>
+</form>
 </body>
 </html>

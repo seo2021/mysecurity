@@ -1,15 +1,624 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>메인</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap - 기술 교환의 새로운 경험</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0a;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Geometric Background */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .hexagon {
+            position: absolute;
+            width: 120px;
+            height: 104px;
+            margin: 52px 0;
+            border: 2px solid #00ff88;
+            animation: rotate 20s linear infinite;
+        }
+
+        .hexagon:before,
+        .hexagon:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+        }
+
+        .hexagon:before {
+            bottom: 100%;
+            border-bottom: 52px solid #00ff88;
+        }
+
+        .hexagon:after {
+            top: 100%;
+            border-top: 52px solid #00ff88;
+        }
+
+        .hex1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .hex2 { top: 30%; right: 10%; animation-delay: 5s; border-color: #ff0080; }
+        .hex3 { bottom: 20%; left: 15%; animation-delay: 10s; border-color: #0080ff; }
+
+        /* Header */
+        header {
+            padding: 30px 0;
+            position: relative;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 900;
+            color: #00ff88;
+            text-decoration: none;
+            letter-spacing: -1px;
+            position: relative;
+        }
+
+        .logo::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #00ff88, #0080ff, #ff0080);
+            border-radius: 2px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-size: 15px;
+            position: relative;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: #00ff88;
+            border: 2px solid #00ff88;
+        }
+
+        .btn-login:hover {
+            background: #00ff88;
+            color: #0a0a0a;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn-signup {
+            background: #ff0080;
+            color: white;
+            border: 2px solid #ff0080;
+        }
+
+        .btn-signup:hover {
+            background: transparent;
+            color: #ff0080;
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.4);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .hero {
+            padding: 80px 0;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 30px;
+            line-height: 1.1;
+        }
+
+        .skill-exchange {
+            color: #00ff88;
+        }
+
+        .platform {
+            color: #ff0080;
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            opacity: 0.8;
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary {
+            background: linear-gradient(45deg, #00ff88, #0080ff);
+            color: #0a0a0a;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .cta-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .demo-link {
+            color: #0080ff;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+
+        .demo-link:hover {
+            border-bottom-color: #0080ff;
+        }
+
+        /* Skills Preview */
+        .skills-preview {
+            margin: 100px 0;
+            position: relative;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .skill-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-10px);
+            border-color: #00ff88;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .skill-emoji {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .skill-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #00ff88;
+        }
+
+        .skill-subtitle {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Exchange Arrow */
+        .exchange-arrow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: #ff0080;
+            animation: bounce 2s infinite;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a1a1a;
+            border: 2px solid #00ff88;
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .modal h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .modal h2.login-title {
+            color: #00ff88;
+        }
+
+        .modal h2.signup-title {
+            color: #ff0080;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #00ff88;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            background: #0a0a0a;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #ff0080;
+            font-size: 28px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .close:hover {
+            transform: scale(1.2);
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn {
+            background: #00ff88;
+            color: #0a0a0a;
+        }
+
+        .signup-btn {
+            background: #ff0080;
+            color: white;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animations */
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translate(-50%, -50%) translateY(0);
+            }
+            40% {
+                transform: translate(-50%, -50%) translateY(-10px);
+            }
+            60% {
+                transform: translate(-50%, -50%) translateY(-5px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            .cta-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .skills-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* Success message */
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #00ff88;
+            color: #0a0a0a;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+
+        .success-message.show {
+            transform: translateX(0);
+        }
+    </style>
 </head>
 <body>
-<h2>메인</h2>
-<p>반가워요!</p>
-<a th:href="@{/my-page}">마이 페이지로 가기</a>
+<div class="bg-pattern">
+    <div class="hexagon hex1"></div>
+    <div class="hexagon hex2"></div>
+    <div class="hexagon hex3"></div>
+</div>
+
+<header>
+    <nav>
+        <a href="#" class="logo">SkillSwap</a>
+        <div class="auth-buttons">
+            <a th:href="@{/login}" class="btn btn-login">로그인</a>
+            <a th:href="@{/register}" class="btn btn-signup">회원가입</a>
+        </div>
+    </nav>
+</header>
+
+<main class="main">
+    <section class="hero">
+        <h1>
+            <span class="skill-exchange">기술을</span><br>
+            <span class="platform">교환하세요</span>
+        </h1>
+        <p>당신의 스킬을 나누고, 새로운 것을 배워보세요.<br>1:1 매칭으로 서로 성장하는 커뮤니티.</p>
+
+        <div class="cta-group">
+            <a href="#" class="cta-primary" onclick="openModal('signup')">
+                스킬 교환 시작하기
+            </a>
+            <a href="#" class="demo-link">어떻게 작동하나요?</a>
+        </div>
+    </section>
+
+    <section class="skills-preview">
+        <div class="skills-grid">
+            <div class="skill-card" onclick="showInterest('give')">
+                <span class="skill-emoji">🎨</span>
+                <div class="skill-title">가르칠 수 있는 것</div>
+                <div class="skill-subtitle">디자인 • 코딩 • 언어 • 음악</div>
+            </div>
+
+            <div class="exchange-arrow">⚡</div>
+
+            <div class="skill-card" onclick="showInterest('learn')">
+                <span class="skill-emoji">🚀</span>
+                <div class="skill-title">배우고 싶은 것</div>
+                <div class="skill-subtitle">새로운 기술 • 취미 • 언어</div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('login')">&times;</span>
+        <h2 class="login-title">로그인</h2>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>이메일</label>
+                <input type="email" placeholder="이메일을 입력하세요" required>
+            </div>
+            <div class="form-group">
+                <label>비밀번호</label>
+                <input type="password" placeholder="비밀번호를 입력하세요" required>
+            </div>
+            <button type="submit" class="modal-btn login-btn">로그인</button>
+        </form>
+    </div>
+</div>
+
+<!-- Signup Modal -->
+<div id="signupModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('signup')">&times;</span>
+        <h2 class="signup-title">회원가입</h2>
+        <form onsubmit="handleSignup(event)">
+            <div class="form-group">
+                <label>닉네임</label>
+                <input type="text" placeholder="어떻게 불러드릴까요?" required>
+            </div>
+            <div class="form-group">
+                <label>이메일</label>
+                <input type="email" placeholder="이메일을 입력하세요" required>
+            </div>
+            <div class="form-group">
+                <label>비밀번호</label>
+                <input type="password" placeholder="비밀번호를 입력하세요" required>
+            </div>
+            <button type="submit" class="modal-btn signup-btn">시작하기</button>
+        </form>
+    </div>
+</div>
+
+<div id="successMessage" class="success-message"></div>
+
+<script>
+    // Modal functions
+    function openModal(type) {
+        document.getElementById(type + 'Modal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(type) {
+        document.getElementById(type + 'Modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // Handle form submissions
+    function handleLogin(event) {
+        event.preventDefault();
+        showSuccess('로그인 되었습니다! 🎉');
+        closeModal('login');
+    }
+
+    function handleSignup(event) {
+        event.preventDefault();
+        showSuccess('회원가입 완료! 스킬 교환을 시작해보세요 ✨');
+        closeModal('signup');
+    }
+
+    // Show interest
+    function showInterest(type) {
+        const message = type === 'give' ?
+            '가르칠 수 있는 스킬을 등록해보세요!' :
+            '배우고 싶은 것을 찾아보세요!';
+        showSuccess(message);
+    }
+
+    // Success message
+    function showSuccess(message) {
+        const successEl = document.getElementById('successMessage');
+        successEl.textContent = message;
+        successEl.classList.add('show');
+
+        setTimeout(() => {
+            successEl.classList.remove('show');
+        }, 3000);
+    }
+
+    // Add some interactive effects
+    document.addEventListener('mousemove', (e) => {
+        const hexagons = document.querySelectorAll('.hexagon');
+        const mouseX = e.clientX / window.innerWidth;
+        const mouseY = e.clientY / window.innerHeight;
+
+        hexagons.forEach((hex, index) => {
+            const speed = (index + 1) * 0.05;
+            const x = mouseX * 20 * speed;
+            const y = mouseY * 20 * speed;
+            hex.style.transform = `translate(${x}px, ${y}px) rotate(${x}deg)`;
+        });
+    });
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal('login');
+            closeModal('signup');
+        }
+        if (e.key === 'l' && e.ctrlKey) {
+            e.preventDefault();
+            openModal('login');
+        }
+        if (e.key === 's' && e.ctrlKey) {
+            e.preventDefault();
+            openModal('signup');
+        }
+    });
+</script>
 </body>
 </html>
